@@ -46,11 +46,11 @@ CREATE FUNCTION trans.trans_coords_bk_process() RETURNS TRIGGER AS $function_end
             INSERT INTO trans.trans_id_bk (tablename, id, bk, equip_id) VALUES (table_name, new_id, bk_id, NEW.equip_id) ;
         END IF;
         IF NEW.cycle_id IS NOT NULL THEN
-            SELECT id FROM trans.trans_id_bk WHERE tablename='trans.trans_cycles' AND bk=NEW.cycle_id INTO new_cycle_id AND equip_id = NEW.equip_id;
+            SELECT id FROM trans.trans_id_bk WHERE tablename='trans.trans_cycles' AND bk=NEW.cycle_id AND equip_id = NEW.equip_id INTO new_cycle_id;
             IF new_cycle_id IS NULL THEN
                 WITH rows AS 
                 (
-                    INSERT INTO trans.trans_cycles (haul_id) VALUES (NEW.equip_id) RETURNING id
+                    INSERT INTO trans.trans_cycles (haul_id, id) VALUES (NEW.cycle_id, NEW.equip_id) RETURNING id
                 ) 
                 SELECT rows.id FROM rows INTO new_cycle_id;
             ELSE
